@@ -1,10 +1,17 @@
-import { Client } from "discord.js";
+import { Client, InteractionCollector } from "discord.js";
+import config from "./config/config";
 import { IntentOptions } from "./config/IntentOptions"
 
 (async () => {
   const BOT = new Client({ intents: IntentOptions });
 
-  BOT.on("ready", () => console.log("Connected to Discord!"));
+  BOT.once("ready", () => console.log("Connected to Discord!"));
+
+  BOT.on("interactionCreate", async interaction => {
+    if (!interaction.isCommand()) {
+      return
+    }
+  })
   
-  await BOT.login(process.env.BOT_TOKEN);
+  await BOT.login(config.BOT_TOKEN);
 })();
