@@ -11,9 +11,7 @@ import { Client, CommandInteraction, ChatInputApplicationCommandData } from "dis
          accepts the bot object and the interaction.
 
     Reminder: any command declared in "commands" directory must implement the relevant properties of ChatInputApplicationCommandData and its parent interface
-*/
 
-/*
     export interface BaseApplicationCommandData {
         name: string;
         nameLocalizations?: LocalizationMap;
