@@ -1,12 +1,16 @@
-import { Client, CommandInteraction, Interaction } from "discord.js";
+import { Client, CommandInteraction, Interaction, Events } from "discord.js";
 import { Commands } from "../Commands";
 
 export default (BOT: Client): void => {
-    BOT.on("interactionCreate", async (interaction: Interaction) => {
+    BOT.on(Events.InteractionCreate, async (interaction: Interaction) => {
         if (interaction.isCommand() || interaction.isContextMenuCommand()) {
             await handleSlashCommand(BOT, interaction);
         }
-    })
+
+        if (interaction.isMessageComponent()) {
+            
+        }
+    });
 }
 
 const handleSlashCommand = async (BOT: Client, interaction: CommandInteraction): Promise<void> => {

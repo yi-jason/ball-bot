@@ -12,7 +12,7 @@ import { Command } from "../Command";
 
 export const Flip: Command = {
     name: "flip",
-    description: "flips a coin",
+    description: "Flips a coin",
     type: ApplicationCommandType.ChatInput,
     run: async (BOT: Client, interaction: CommandInteraction) => {
         const condition: Boolean = Math.random() < 0.5;
