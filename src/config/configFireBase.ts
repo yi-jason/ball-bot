@@ -1,8 +1,10 @@
 import dotenv from "dotenv"
 dotenv.config();
 
+const { FIREBASE_KEY } = process.env
+
 const firebaseConfig = {
-    apiKey: "AIzaSyCbTLAL-8PuUnH3rhZkO7y4FBGpNE4k__8",
+    apiKey: FIREBASE_KEY,
     authDomain: "ball-bot-40285.firebaseapp.com",
     databaseURL: "https://ball-bot-40285-default-rtdb.firebaseio.com",
     projectId: "ball-bot-40285",
