@@ -1,5 +1,5 @@
 import { Client, CommandInteraction, ApplicationCommandType, ApplicationCommandOptionType, ApplicationCommandOptionData } from "discord.js";
-import { getDatabase, ref, set } from "firebase/database";
+import { Database, DatabaseReference, getDatabase, ref, set } from "firebase/database";
 import { Command } from "../Command";
 
 /*
@@ -30,8 +30,8 @@ export const Gif: Command = {
     run: async (BOT: Client, interaction: CommandInteraction) => {
         const gif = interaction.options.get(gifOptionDefault, true).value?.toString();
 
-        const db = getDatabase();
-        const reference = ref(db, 'gif-list/' + gif);
+        const db: Database = getDatabase();
+        const reference: DatabaseReference = ref(db, 'gif-list/' + gif);
 
         set(reference, {
             url: "Test"
