@@ -1,4 +1,4 @@
-import { Client } from "discord.js";
+import { Client, Events } from "discord.js";
 import { Commands } from "../Commands";
 
 /*
@@ -6,7 +6,7 @@ import { Commands } from "../Commands";
 */
 
 export default (BOT: Client): void => {
-    BOT.on("ready", async () => {
+    BOT.on(Events.ClientReady, async () => {
         if (!BOT.user || !BOT.application) {
             return;
         }

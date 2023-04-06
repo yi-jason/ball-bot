@@ -1,5 +1,5 @@
 import dotenv from "dotenv"
-dotenv.config()
+dotenv.config();
 
 const { BOT_TOKEN } = process.env;
 
@@ -11,4 +11,4 @@ const config: Record<string, string> = {
     BOT_TOKEN,
 }
 
-export default config
+export default config;
