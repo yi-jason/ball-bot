@@ -28,9 +28,10 @@ export const GifSave: Command = {
     type: ApplicationCommandType.ChatInput,
     options: gifSaveCommandOptions,
     run: async (BOT: Client, interaction: CommandInteraction) => {
-        const gifName = interaction.options.get(gifSaveOptionDefault, true).value?.toString();
 
-        if (!gifName) return;
+        if (!interaction.options.get(gifSaveOptionDefault, true).value) return;
+
+        const gifName = formatGifName(interaction.options.get(gifSaveOptionDefault, true).value?.toString()!);
 
         const channelId: string = interaction.channelId;
 
@@ -51,4 +52,8 @@ export const GifSave: Command = {
             content: "**gif saved!**"
         });
     }
+}
+
+function formatGifName(name: string): string {
+    return name.replace(/'/g, "").toLowerCase();
 }
