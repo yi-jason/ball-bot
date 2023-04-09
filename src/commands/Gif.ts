@@ -1,5 +1,5 @@
 import { Client, CommandInteraction, ApplicationCommandType, ApplicationCommandOptionType, ApplicationCommandOptionData } from "discord.js";
-import { Database, DatabaseReference, getDatabase, ref, set } from "firebase/database";
+import { Database, DatabaseReference, getDatabase, ref, set, onValue } from "firebase/database";
 import { Command } from "../Command";
 
 /*
@@ -28,13 +28,24 @@ export const Gif: Command = {
     type: ApplicationCommandType.ChatInput,
     options: gifCommandOptions,
     run: async (BOT: Client, interaction: CommandInteraction) => {
-        const gif = interaction.options.get(gifOptionDefault, true).value?.toString();
+        const gif = interaction.options.get(gifOptionDefault, true).value?.toString().toLowerCase();
 
         const db: Database = getDatabase();
         const reference: DatabaseReference = ref(db, 'gif-list/' + gif);
 
-        set(reference, {
-            url: "Test"
+        onValue(reference, async (snapshot) => {
+            if (snapshot.exists()) {
+                const url = snapshot.val().url;
+                await interaction.followUp({
+                    content: url
+                });
+            } else {
+                await interaction.followUp({
+                    content: `GIF "${gif}" does not exist!`
+                });
+            }
+          }, {
+            onlyOnce: true
         });
     }
 }
