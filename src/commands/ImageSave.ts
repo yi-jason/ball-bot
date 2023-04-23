@@ -36,7 +36,7 @@ export const ImageSave: Command = {
         const channelId: string = interaction.channelId;
         
         const db: Database = getDatabase();
-        const recentImgPath: string = "img/".concat(channelId).concat("/recent");
+        const recentImgPath: string = "channel-img/".concat(channelId).concat("/recent");
         const imgListPath: string = "img-list/".concat(imgName);
         const imgRecentRef: DatabaseReference = ref(db, recentImgPath);
         const imgListRef: DatabaseReference = ref(db, imgListPath);
@@ -49,7 +49,7 @@ export const ImageSave: Command = {
 
         await interaction.followUp({
             ephemeral: false,
-            content: "**image saved!**"
+            content: "**Image saved!**"
         });
     }
 }

@@ -41,7 +41,7 @@ export const Gif: Command = {
                 });
             } else {
                 await interaction.followUp({
-                    content: `GIF "${gif}" does not exist!`
+                    content: `**GIF "${gif}" does not exist!**`
                 });
             }
           }, {

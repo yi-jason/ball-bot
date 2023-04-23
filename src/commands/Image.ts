@@ -34,14 +34,14 @@ export const Image: Command = {
         const reference: DatabaseReference = ref(db, 'img-list/' + img);
 
         onValue(reference, async (snapshot) => {
-            if (!snapshot.exists()) {
+            if (snapshot.exists()) {
                 const url = snapshot.val().url;
                 await interaction.followUp({
                     content: url
                 });
             } else {
                 await interaction.followUp({
-                    content: `IMAGE "${img}" does not exist!`
+                    content: `**Image "${img}" does not exist!**`
                 });
             }
           }, {
