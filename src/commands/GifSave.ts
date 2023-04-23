@@ -36,7 +36,7 @@ export const GifSave: Command = {
         const channelId: string = interaction.channelId;
 
         const db: Database = getDatabase();
-        const recentGifPath: string = "gif/".concat(channelId).concat("/recent");
+        const recentGifPath: string = "channel-gif/".concat(channelId).concat("/recent");
         const gifListPath: string = "gif-list/".concat(gifName);
         const gifRecentRef: DatabaseReference = ref(db, recentGifPath);
         const gifListRef: DatabaseReference = ref(db, gifListPath);
@@ -49,7 +49,7 @@ export const GifSave: Command = {
 
         await interaction.followUp({
             ephemeral: false,
-            content: "**gif saved!**"
+            content: "**GIF saved!**"
         });
     }
 }
