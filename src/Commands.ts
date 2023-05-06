@@ -5,9 +5,11 @@ import { Gif } from "./commands/Gif";
 import { GifSave } from "./commands/GifSave";
 import { Image } from "./commands/Image";
 import { ImageSave } from "./commands/ImageSave";
+import { Nba } from "./commands/Nba";
+import { Snipe } from "./commands/Snipe"
 
 /*
     Array of Command objects that stores all the Bot's commands
 */
 
-export const Commands: Command[] = [Ask, Flip, Gif, GifSave, Image, ImageSave];
+export const Commands: Command[] = [Ask, Flip, Gif, GifSave, Image, ImageSave, Snipe, Nba];

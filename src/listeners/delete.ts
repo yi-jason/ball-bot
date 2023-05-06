@@ -1,5 +1,4 @@
-import { PartialMessage } from "discord.js";
-import { Client, Message, Events, Snowflake, Attachment, Collection } from "discord.js";
+import { Client, Message, Events, Snowflake, Attachment, Collection, PartialMessage } from "discord.js";
 import { Database, DatabaseReference, getDatabase, ref, set } from "firebase/database";
 
 export default (BOT: Client): void => {
@@ -14,7 +13,7 @@ export default (BOT: Client): void => {
         }
 
         if (messageAttachments == undefined || messageAttachments.size === 0) {
-            return;
+            
         } else {
             const attachments: Attachment | undefined = messageAttachments.at(0);
     
