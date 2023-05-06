@@ -3,7 +3,6 @@ import { NBALiveHTTP } from "../lib/NBALiveHTTP";
 import { NBAColors } from "../lib/NBAColors";
 import { Command } from "../Command";
 import { ActionRowBuilder } from "@discordjs/builders";
-import { Embed } from "discord.js";
 
 /*
     export interface ChatInputApplicationCommandData extends BaseApplicationCommandData {
@@ -60,7 +59,7 @@ export const Nba: Command = {
             const homeTeam: string = game.homeTeam.teamTricode;
             const awayTeam: string = game.awayTeam.teamTricode;
             const gameStatus: string = game.gameStatusText;
-            const gameTime: string = game.gameEt;
+            const gameTime: string = new Date(game.gameEt.slice(0, -1)).toLocaleTimeString();
 
             const g: Game = {
                 homeTeam: homeTeam,
@@ -85,7 +84,7 @@ export const Nba: Command = {
             gamesEmbed.addFields(
                 {
                     name: `${homeColor} ${homeTeam} vs. ${awayTeam} ${awayColor}`, 
-                    value: `Date: ${gameTime}\nStatus: ${gameStatus}`
+                    value: `Time: ${gameStatus}`
                 }
             )
 
