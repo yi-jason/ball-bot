@@ -13,6 +13,7 @@ import message from "../listeners/message";
     }
 */
 
+/* There are unresolved bugs with this command */
 export const Snipe: Command = {
     name: "snipe",
     description: "Get the most recently deleted message",

@@ -1,4 +1,4 @@
-export const Colors: {[key: string]: string} = {
+export const NBAColors: {[key: string]: string} = {
   ATL: 'red',
   BKN: 'black',
   BOS: 'green',
