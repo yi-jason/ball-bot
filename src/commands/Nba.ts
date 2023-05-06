@@ -1,6 +1,6 @@
 import { Client, CommandInteraction, ApplicationCommandType, EmbedBuilder } from "discord.js";
 import { NBALiveHTTP } from "../lib/NBALiveHTTP";
-import { Colors } from "../lib/NBAColors";
+import { NBAColors } from "../lib/NBAColors";
 import { Command } from "../Command";
 
 /*
@@ -47,8 +47,8 @@ export const Nba: Command = {
             const gameStatus: string = game.gameStatusText;
             const gameTime: string = game.gameEt;
 
-            const homeColor: string = `:${Colors[homeTeam]}_square:`;
-            const awayColor: string = `:${Colors[awayTeam]}_square:`;
+            const homeColor: string = `:${NBAColors[homeTeam]}_square:`;
+            const awayColor: string = `:${NBAColors[awayTeam]}_square:`;
 
             gameEmbed.addFields(
                 {
@@ -60,6 +60,7 @@ export const Nba: Command = {
 
         await interaction.followUp({
             embeds: [gameEmbed],
+            ephemeral: true
         });
     }
 }
