@@ -9,7 +9,8 @@ const NBALiveRequest = async (url: string): Promise<void> => {
 
 export const NBALiveHTTP = async (endpointURL: string): Promise<void> => {
     const requestURL = baseURL.concat(endpointURL);
+    console.log(requestURL);
     const data: any = await NBALiveRequest(requestURL);
-    
+
     return data;
 }

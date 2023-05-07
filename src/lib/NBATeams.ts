@@ -29,10 +29,8 @@ export const getTeamLogo = (identifier: string | number, from: number): string =
 }
 
 
-/*
-    static data
-*/
 
+/* static data */
 const teamData = [
     [1610612737, 'ATL', 'Hawks', 1949, 'Atlanta', 'Atlanta Hawks', 'Georgia', [1958]],
     [1610612738, 'BOS', 'Celtics', 1946, 'Boston', 'Boston Celtics', 'Massachusetts', [1957, 1959, 1960, 1961, 1962, 1963, 1964, 1965, 1966, 1968, 1969, 1974, 1976, 1981, 1984, 1986, 2008]],

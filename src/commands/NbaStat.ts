@@ -1,6 +1,6 @@
 import { Client, CommandInteraction, ApplicationCommandType, ApplicationCommandOptionType, ApplicationCommandOptionData, Colors, CommandInteractionOption } from "discord.js";
 import { Command } from "../Command";
-import { NBAGetGameId, NBAGetTeamStats } from "../lib/NBAUtils";
+import { NBAGetGameId, NBAGetPLayerStats, NBAGetTeamStats, playerStatKeys, playerStatKeysVerbose, playerStatistics, teamStatKeys, teamStatKeysVerbose, teamStatistics } from "../lib/NBAUtils";
 import { Team, getTeamInfo, getTeamLogo } from "../lib/NBATeams";
 import { EmbedBuilder } from "@discordjs/builders";
 
@@ -13,21 +13,7 @@ import { EmbedBuilder } from "@discordjs/builders";
     }
 */
 
-export interface teamStatistics {
-    points: number;
-    assists: number;
-    reboundsTotal: number;
-    blocks: number;
-    turnovers: number;
-    fieldGoalsPercentage: number;
-    trueShootingPercentage: number;
-    freeThrowsAttempted: number;
-    threePointersAttempted: number;
-    threePointersPercentage: number;
-    benchPoints: number;
-}
 
-const statKeys: string[] = ['points', 'assists', 'reboundsTotal', 'blocks', 'turnovers', 'fieldGoalsPercentage', 'trueShootingPercentage', 'freeThrowsAttempted', 'threePointersAttempted', 'threePointersPercentage', 'benchPoints'];
 
 const teamOptionDefault: string = "team";
 const playerOptionDefault: string = "player";
@@ -56,8 +42,15 @@ export const Stat: Command = {
         const team: string | undefined = interaction.options.get(teamOptionDefault, true).value?.toString();
         const player: any | undefined = interaction.options.get(playerOptionDefault, false);
 
-        if (team === undefined) return;
 
+
+        /* Team Stats */
+
+
+
+        if (team === undefined) return;
+        
+        /* Check for game/team existence */
         const gameId: string | null = await NBAGetGameId(team.toLowerCase());
 
         if (gameId === null) {
@@ -68,14 +61,22 @@ export const Stat: Command = {
             return;
         }
 
-        const teamStatData: teamStatistics = await NBAGetTeamStats(gameId, team);
+        if (player === null) {
+            const teamStatData: teamStatistics = await NBAGetTeamStats(gameId, team);
 
-        const teamEmbed = new EmbedBuilder()
-            .setTitle(`${getTeamInfo(team, Team.tricode, Team.name)}`)
-            .setThumbnail(getTeamLogo(team, Team.tricode))
-        
-        for (const stat in teamStatData) {
-            if (statKeys.includes(stat)) {
+            const timestamp = Date.now();
+            const date: any = new Date(timestamp);
+            const hours: number = date.getHours();
+            const minutes: number = date.getMinutes();
+
+            const t: string = minutes >= 10 ? `Today at ${hours}:${minutes}` : `Today at ${hours}:0${minutes}`
+
+            const teamEmbed = new EmbedBuilder()
+                .setTitle(`${getTeamInfo(team, Team.tricode, Team.name)}`)
+                .setThumbnail(getTeamLogo(team, Team.tricode))
+                .setDescription(t);
+
+            teamStatKeys.forEach((stat, i) => {
                 let statValue: number | string = teamStatData[stat as keyof teamStatistics];
                 let statValueDisplay: string = `${statValue}`;
 
@@ -85,15 +86,91 @@ export const Stat: Command = {
                 }
 
                 teamEmbed.addFields({
-                    name: stat,
+                    name: teamStatKeysVerbose[i],
                     value: statValueDisplay,
+                    inline: true,
+                });
+                    
+            });
+            
+            interaction.followUp({
+                embeds: [teamEmbed]
+            });
+
+            return; /* end here if team stats only */
+        }
+
+
+
+        /* Player Stats */
+
+
+
+        /* Check for player existence */
+        const playerName = player.value?.toString().toLowerCase();
+        const playerStatRaw: any | null = await NBAGetPLayerStats(playerName, gameId, team);
+
+        if (playerStatRaw === null) {
+            interaction.followUp({
+                content: "`This player does not play for this team or does not exist...`"
+            });
+
+            return;
+        }
+
+        const playerImageURL = `https://cdn.nba.com/headshots/nba/latest/1040x760/${playerStatRaw.personId}.png`
+        if (playerStatRaw.status === "INACTIVE") {  /* Player injured */
+            const playerPosition: string = playerStatRaw.position === undefined ? "?" : playerStatRaw.position;
+            const injuryEmbed: any = new EmbedBuilder()
+                .setTitle(playerStatRaw.name)
+                .setDescription(`#${playerStatRaw.jerseyNum} | Position: ${playerPosition}`)
+                .setThumbnail(playerImageURL)
+                .setTimestamp()
+                .addFields(
+                    {
+                        name: "Status",
+                        value: "Injured",
+                    },
+                    {
+                        name: "Reason",
+                        value: `${playerStatRaw.notPlayingDescription}`
+                    }
+                );
+
+            interaction.followUp({
+                embeds: [injuryEmbed]
+            });
+
+            return;
+        }
+
+        const playerStatData: playerStatistics = playerStatRaw.statistics as playerStatistics;
+        const playerEmbed: any = new EmbedBuilder()
+            .setTitle(playerStatRaw.name)
+            .setDescription(`#${playerStatRaw.jerseyNum} | Position: ${playerStatRaw.position}`)
+            .setThumbnail(playerImageURL)
+            .setTimestamp();
+
+        playerStatKeys.forEach((stat, i) => {
+            let statValue: number = playerStatData[stat as keyof playerStatistics];
+            let statValueDisplay: string = `${statValue}`;
+
+            if (statValue % 1 !== 0) {
+                statValueDisplay = `${(statValue * 100).toFixed(2)}%`;
+            }
+
+            if (statValue !== 0) {
+                playerEmbed.addFields({
+                    name: playerStatKeysVerbose[i],
+                    value: statValueDisplay,
+                    inline: true,
                 });
             }
-                
-        }
-        
-        interaction.followUp({
-            embeds: [teamEmbed]
         });
+
+        interaction.followUp({
+            embeds: [playerEmbed]
+        });
+
     }
 }
