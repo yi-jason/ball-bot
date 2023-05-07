@@ -1,5 +1,5 @@
 import { Client, Message, Events, Snowflake, Attachment, Collection } from "discord.js";
-import { Database, DatabaseReference, getDatabase, ref, set } from "firebase/database";
+import { Database, DatabaseReference, getDatabase, onValue, ref, set } from "firebase/database";
 
 const GIF_PREFIX: string = "https:\/\/tenor.com\/view";
 const IMAGE_SUFFIX: string = "\.(jpg|jpeg|png|tiff|tif|webp)";
@@ -11,9 +11,11 @@ export default (BOT: Client): void => {
     BOT.on(Events.MessageCreate, async (message: Message) => {
         const content: string = message.content;
         const channelId: string = message.channelId;
+        const userId: string = message.author.id;
 
         handleMessageGif(content, channelId);
         handleMessageImage(message, channelId);
+        handleEthanDelete(message, userId);
     });
 }
 
@@ -57,4 +59,18 @@ const handleMessageImage = (message: Message, id: string): void => {
     })
 
     console.log("BOT: [IMAGE DETECTED]");
+}
+
+const handleEthanDelete = (message: Message, userId: string): void => {
+    if (userId == '254814476786728960') {
+        const db: Database = getDatabase();
+        const reference: DatabaseReference = ref(db, "ethan-del/");
+        onValue(reference, async (snapshot) => {
+            if (snapshot.exists() && snapshot.val()) {
+                setTimeout(() => message.delete(), 1000)
+            }
+          }, {
+            onlyOnce: true
+        });
+    }
 }
