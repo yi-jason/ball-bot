@@ -61,9 +61,18 @@ export const Stat: Command = {
             return;
         }
 
-        if (player === null) {
-            const teamStatData: teamStatistics = await NBAGetTeamStats(gameId, team);
+        /* Boxscore request error if game is not ongoing */
+        const teamStatData: teamStatistics | null = await NBAGetTeamStats(gameId, team);
 
+        if (teamStatData === null) {
+            interaction.followUp({
+                content: "`This team/player is not playing yet...`"
+            });
+            
+            return;
+        }
+
+        if (player === null) {
             const timestamp = Date.now();
             const date: any = new Date(timestamp);
             const hours: number = date.getHours();
@@ -104,6 +113,9 @@ export const Stat: Command = {
 
         /* Player Stats */
 
+
+        
+        /* Check if team is playing */
 
 
         /* Check for player existence */

@@ -11,8 +11,11 @@ export const NBAGetAllGames = async (): Promise<any> => {
     return games;
 }
 
-export const NBAGetTeamStats = async (gameId: string, teamTriCode: string): Promise<teamStatistics> => {
+export const NBAGetTeamStats = async (gameId: string, teamTriCode: string): Promise<teamStatistics | null> => {
     const gamesStatData: any = await NBALiveHTTP(boxScoreEndPointURL(gameId));
+
+    if (gamesStatData === undefined) return null;
+
     const teamStatRaw: any = gamesStatData.game.homeTeam.teamTricode.toLowerCase() === teamTriCode 
                     ? gamesStatData.game.homeTeam.statistics
                     : gamesStatData.game.awayTeam.statistics;
@@ -26,6 +29,9 @@ export const NBAGetTeamStats = async (gameId: string, teamTriCode: string): Prom
 
 export const NBAGetPLayerStats = async (playerName: string, gameId: string, teamTriCode: string): Promise<any | null> => {
     const gamesStatData: any = await NBALiveHTTP(boxScoreEndPointURL(gameId));
+
+    if (gamesStatData === undefined) return null;
+
     const playersStatRaw: any = gamesStatData.game.homeTeam.teamTricode.toLowerCase() === teamTriCode 
                     ? gamesStatData.game.homeTeam.players
                     : gamesStatData.game.awayTeam.players;
