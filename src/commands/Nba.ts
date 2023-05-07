@@ -1,5 +1,5 @@
 import { Client, CommandInteraction, ApplicationCommandType, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ComponentType } from "discord.js";
-import { NBALiveHTTP } from "../lib/NBALiveHTTP";
+import { NBAGetAllGames } from "../lib/NBAUtils";
 import { NBAColors } from "../lib/NBAColors";
 import { Command } from "../Command";
 import { ActionRowBuilder } from "@discordjs/builders";
@@ -35,13 +35,14 @@ const teamSelection = new StringSelectMenuBuilder()
     .setCustomId('ball-bot')
     .setPlaceholder('Select a team!')
 
+const scoreboardEndPointURL: string = "scoreboard/todaysScoreboard_00.json";
+
 export const Nba: Command = {
     name: "nba",
     description: "Sends real-time NBA game data",
     type: ApplicationCommandType.ChatInput,
     run: async (BOT: Client, interaction: CommandInteraction) => {
-        const responseData: any = await NBALiveHTTP("scoreboard/todaysScoreboard_00.json");
-        const games: any = responseData.scoreboard.games;
+        const games: any = await NBAGetAllGames();
         const gameList: Game[] = [];
         let gameIndex: number = 0;
 
