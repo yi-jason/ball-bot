@@ -8,9 +8,8 @@ import { ImageSave } from "./commands/ImageSave";
 import { Nba } from "./commands/Nba";
 import { Snipe } from "./commands/Snipe"
 import { Stat } from "./commands/NbaStat";
+import { EthanDelete } from "./commands/EthanDelete";
 
-/*
-    Array of Command objects that stores all the Bot's commands
-*/
+/* Array of Command objects that stores all the Bot's commands */
 
-export const Commands: Command[] = [Ask, Flip, Gif, GifSave, Image, ImageSave, Snipe, Nba, Stat];
+export const Commands: Command[] = [Ask, Flip, Gif, GifSave, Image, ImageSave, Snipe, Nba, Stat, EthanDelete];
