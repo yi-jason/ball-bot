@@ -93,7 +93,7 @@ const listCallBack = async (snapshot: DataSnapshot, interaction: CommandInteract
                     .setDescription(getPageContent(searchResults, newFront, newBack))
                     .setTimestamp();
                 
-                await response.edit({embeds: [updatedResultEmbed]})
+                await response.edit({embeds: [updatedResultEmbed]});
                 await i.reply('updated');
                 await i.deleteReply();
             });

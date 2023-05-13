@@ -31,10 +31,6 @@ interface Game {
 
 const ballThumbnail: string = "https://cdn.discordapp.com/avatars/983839849373114428/c06b523b9ef70c1d56e46ece31d4e4cc?size=1024"
 
-const teamSelection = new StringSelectMenuBuilder()
-    .setCustomId('ball-bot')
-    .setPlaceholder('Select a team!')
-
 const scoreboardEndPointURL: string = "scoreboard/todaysScoreboard_00.json";
 
 export const Nba: Command = {
@@ -55,6 +51,10 @@ export const Nba: Command = {
             .setTitle("Today's Games")
             .setThumbnail(ballThumbnail)
             .setTimestamp()
+
+        const teamSelection = new StringSelectMenuBuilder()
+            .setCustomId('ball-bot')
+            .setPlaceholder('Select a team!')
         
         for (const game of games) {
             const homeTeam: string = game.homeTeam.teamTricode;
@@ -92,10 +92,8 @@ export const Nba: Command = {
             teamSelection.addOptions(
                 new StringSelectMenuOptionBuilder()
                     .setLabel(`${homeTeam} | ${awayTeam}`)
-                    .setValue(gameIndex.toString())
+                    .setValue(`${gameIndex++}`)
             );
-
-            ++gameIndex;
         }
 
         const row: any = new ActionRowBuilder().addComponents(teamSelection);
@@ -132,7 +130,13 @@ export const Nba: Command = {
                     }
                 );
 
-            await i.reply({embeds: [gEmbed]})
+            await response.edit({embeds: [gEmbed]});
+            await i.reply({
+                content: "updated",
+                ephemeral: true,
+            });
+            
+            await i.deleteReply();
         });
     }
 }
