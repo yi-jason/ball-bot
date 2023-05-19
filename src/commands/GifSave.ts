@@ -49,7 +49,7 @@ export const GifSave: Command = {
 
         await interaction.followUp({
             ephemeral: false,
-            content: "**GIF saved!**"
+            content: "``GIF saved!``"
         });
     }
 }
