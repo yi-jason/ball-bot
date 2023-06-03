@@ -42,8 +42,9 @@ export const Nba: Command = {
         const gameList: Game[] = [];
         let gameIndex: number = 0;
 
-        if (games == null || games == undefined) {
-            await interaction.channel?.send("`No games today...`");
+        if (games == null || games == undefined || games.length == 0) {
+            await interaction.followUp("`No games today :(`");
+            return;
         }
 
         const gamesEmbed = new EmbedBuilder()
@@ -135,7 +136,7 @@ export const Nba: Command = {
                 content: "updated",
                 ephemeral: true,
             });
-            
+             
             await i.deleteReply();
         });
     }
