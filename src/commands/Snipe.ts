@@ -48,6 +48,6 @@ export const Snipe: Command = {
                     ]
                 });
             }
-        })
+        }, { onlyOnce: true })
     }
 }
