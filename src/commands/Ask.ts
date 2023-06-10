@@ -1,5 +1,6 @@
 import { Client, CommandInteraction, ApplicationCommandType, ApplicationCommandOptionType, ApplicationCommandOptionData, Colors } from "discord.js";
 import { Command } from "../Command";
+import { EmbedBuilder } from "@discordjs/builders";
 
 /*
     export interface ChatInputApplicationCommandData extends BaseApplicationCommandData {
@@ -23,22 +24,34 @@ const askCommandOptions: ApplicationCommandOptionData[] = [
 
 export const Ask: Command = {
     name: "ask",
-    description: "Returns a positive or negative affirmation",
+    description: "Responds with an agreement or disagreement",
     type: ApplicationCommandType.ChatInput,
     options: askCommandOptions,
     run: async (BOT: Client, interaction: CommandInteraction) => {
         const condition: Boolean = Math.random() < 0.5;
         const question = interaction.options.get(askOptionDefault, true).value?.toString();
 
+        const res = new EmbedBuilder(
+            {
+                description: `Q: ${question}`,
+            }
+        )
+
+        if (question?.toLowerCase() == "bdl") {
+            res.setTitle("ball never lies");
+        } else {
+            if (condition) {
+                res.setTitle("yes");
+                res.setColor(0x00ff00);
+            } else {
+                res.setTitle("no");
+                res.setColor(0xff0000);
+            }
+        }
+
         await interaction.followUp({
             ephemeral: true,
-            embeds: [
-                {
-                    title: (condition ? "Yes!" : "No!"),
-                    description: question,
-                    color: 0xff0000
-                }
-            ]
+            embeds: [res]
         });
     }
 }

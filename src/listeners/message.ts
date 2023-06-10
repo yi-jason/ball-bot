@@ -1,4 +1,5 @@
-import { Client, Message, Events, Snowflake, Attachment, Collection } from "discord.js";
+import color from "ansi-colors";
+import { Client, Message, Events, Snowflake, Attachment, Collection, TextChannel, GuildBasedChannel } from "discord.js";
 import { Database, DatabaseReference, getDatabase, onValue, ref, set } from "firebase/database";
 
 const GIF_PREFIX: string = "https:\/\/tenor.com\/view";
@@ -16,12 +17,23 @@ export default (BOT: Client): void => {
         handleMessageGif(content, channelId);
         handleMessageImage(message, channelId);
         handleEthanDelete(message, userId);
+
+        if (message.guild != null) {
+            const c: GuildBasedChannel | undefined | string = message.guild.channels.cache.find(channel => channel.id === channelId);
+            let channelName: string | null = null;
+            
+            if (c != undefined) {
+                channelName = c.name;
+            }
+
+            process.stdout.write(color.red(color.bold(message.guild.name)));
+            process.stdout.write(`: (${color.blue("#" + channelName)} ${color.green("@" + message.author.username)}): ${content}\n`);
+        }
     });
 }
 
 const handleMessageGif = (content: string, id: string): void => {
     if (!GIF_REGEX.test(content)) {
-        console.log(content)
         return;
     }
 
