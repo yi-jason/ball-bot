@@ -43,7 +43,7 @@ export const Nba: Command = {
         let gameIndex: number = 0;
 
         if (games == null || games == undefined || games.length == 0) {
-            await interaction.followUp("`No games today :(`");
+            await interaction.followUp("```No games today :(```");
             return;
         }
 
