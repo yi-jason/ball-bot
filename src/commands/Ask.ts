@@ -37,7 +37,7 @@ export const Ask: Command = {
             }
         )
 
-        if (question?.toLowerCase() == "bdl") {
+        if (question?.toLowerCase() === "bdl") {
             res.setTitle("ball never lies");
         } else {
             if (condition) {
