@@ -1,9 +1,10 @@
 import { Worker } from "worker_threads";
-import { Client, CommandInteraction, ApplicationCommandType, ApplicationCommandOptionType, ApplicationCommandOptionData, Attachment } from "discord.js";
-import sharp from "sharp";
+import { Client, CommandInteraction, ApplicationCommandType, ApplicationCommandOptionType, ApplicationCommandOptionData, Attachment, AttachmentBuilder } from "discord.js";
 import { Command } from "../Command";
 import axios from "axios";
 import fs from "fs";
+
+require('sharp');
 
 const CACHE_PATH: string = "./img-cache/";
 
@@ -65,13 +66,24 @@ export const Pixelate: Command = {
                 rather: heavy computational tasks may block other commands
             */
 
-            const iWorker: Worker = new Worker("./src/workers/ImageWorker.js");
+            const iWorker: Worker = new Worker("./src/workers/Worker.js", {
+                workerData: {
+                    value: interaction.channelId,
+                    path: "./PixelateWorker.ts"
+                }
+            });
             
             if (iWorker != null) {
-                iWorker.on("message", data => {
-                    interaction.followUp(`${data}`);
+                iWorker.on("message", (data) => {
+                    const attachment = new AttachmentBuilder("./img-cache/output.jpg");
+                    interaction.followUp({
+                        content: data,
+                        files: [attachment],
+                    });
                 });
             }
+
+            return;
 
         }
     }
@@ -93,4 +105,3 @@ const fetchImageFromURL = async (url: string, channelId: string): Promise<number
         return undefined;
     }
 }
-

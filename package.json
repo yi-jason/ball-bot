@@ -5,7 +5,7 @@
   "main": "./prod/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "ts-node -r dotenv/config ./src/index.ts"
+    "start": "ts-node --esm ./src/index.ts"
   },
   "repository": {
     "type": "git",
