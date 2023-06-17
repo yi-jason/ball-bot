@@ -1,3 +1,4 @@
 /node_modules/
 /prod/
+/img-cache/
 .env

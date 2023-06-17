@@ -68,8 +68,9 @@ export const Pixelate: Command = {
 
             const iWorker: Worker = new Worker("./src/workers/Worker.js", {
                 workerData: {
-                    value: interaction.channelId,
-                    path: "./PixelateWorker.ts"
+                    id: interaction.channelId,
+                    factor: factor,
+                    path: "./PixelateWorker.ts",
                 }
             });
             
