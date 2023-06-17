@@ -10,13 +10,13 @@ const pixelate = async (channelId: string, factor: number): Promise<string> => {
 
     if (!(width && height && channels)) return "hello world";
 
-    let rWidth: number = width + (factor - (width % factor));
-    let rHeight: number = height;
+    let rWidth: number = width - (width % factor);
+    let blockWidth: number = rWidth / factor;
+    let rHeight: number = height - (height % blockWidth);
 
     await image.raw().resize({width: rWidth, height: rHeight}).toBuffer((err, data, info) => {
         const blank: Buffer = Buffer.alloc(rWidth * rHeight * channels);
 
-        let blockWidth: number = rWidth / factor;
         let blockImageWidth: number = rWidth / blockWidth;
         let blockImageHeight: number = rHeight / blockWidth;
         let blockPixelCount: number = blockWidth * blockWidth;
