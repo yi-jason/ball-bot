@@ -14,90 +14,103 @@ const pixelate = async (channelId: string, factor: number): Promise<string> => {
     let blockWidth: number = rWidth / factor;
     let rHeight: number = height - (height % blockWidth);
 
-    await image.raw().resize({width: rWidth, height: rHeight}).toBuffer((err, data, info) => {
-        const blank: Buffer = Buffer.alloc(rWidth * rHeight * channels);
+    await image
+        .raw()
+        .resize({width: rWidth, height: rHeight})
+        .removeAlpha()
+        .toBuffer((err, data, info) => {
+            let channels:number = 3;
 
-        let blockImageWidth: number = rWidth / blockWidth;
-        let blockImageHeight: number = rHeight / blockWidth;
-        let blockPixelCount: number = blockWidth * blockWidth;
-        let blockHeightIndex: number = -1;
+            const blank: Buffer = Buffer.alloc(rWidth * rHeight * channels);
 
-        for (let i: number = 0; i < blockImageWidth * blockImageHeight; ++i) {
+            let blockImageWidth: number = rWidth / blockWidth;
+            let blockImageHeight: number = rHeight / blockWidth;
+            let blockPixelCount: number = blockWidth * blockWidth;
+            let blockHeightIndex: number = -1;
 
-            if (i % blockImageWidth == 0) blockHeightIndex++;
-            
-            // blockHeightIndex * pixelateImageWidth * blockPixelCount * channels - (blockHeightIndex * width * channels);
-            // blockHeightIndex * channels * (pixelateImageWidth * blockPixelCount - width);
+            //for (let i: number = 0; i < blockImageWidth * blockImageHeight; ++i) {
+            for (let i: number = 0; i < 1; ++i) {
 
-            const blockHeightOffset = Math.max(0, blockHeightIndex * channels * (blockImageWidth * blockPixelCount - rWidth));
-            const blockIndex: number = i * blockWidth * channels + (blockHeightOffset);
-
-            let redTotal: number = 0;
-            let greenTotal: number = 0;
-            let blueTotal: number = 0;
-            
-            let pixelHeightIndex: number = -1;
-
-            for (let j: number = 0; j < blockPixelCount; ++j) {
-                if (j % blockWidth == 0) pixelHeightIndex++;
+                if (i % blockImageWidth == 0) blockHeightIndex++;
                 
-                const pixelHeightOffset = pixelHeightIndex * (rWidth) * channels;
-                const pixelPosition: number = blockIndex + ((j % blockWidth) * channels) + (pixelHeightOffset);
+                // blockHeightIndex * pixelateImageWidth * blockPixelCount * channels - (blockHeightIndex * width * channels);
+                // blockHeightIndex * channels * (pixelateImageWidth * blockPixelCount - width);
 
-                redTotal += data[pixelPosition];
-                greenTotal += data[pixelPosition + 1];
-                blueTotal += data[pixelPosition + 2];
-                tally++;
-            }
+                const blockHeightOffset = Math.max(0, blockHeightIndex * channels * (blockImageWidth * blockPixelCount - rWidth));
+                const blockIndex: number = i * blockWidth * channels + (blockHeightOffset);
 
-            const averageRed: number = redTotal / blockPixelCount;
-            const averageGreen: number = greenTotal / blockPixelCount;
-            const averageBlue: number = blueTotal / blockPixelCount;
-
-            pixelHeightIndex = -1;
-
-            for (let j: number = 0; j < blockPixelCount; ++j) {
-                if (j % blockWidth == 0) pixelHeightIndex++;
+                let redTotal: number = 0;
+                let greenTotal: number = 0;
+                let blueTotal: number = 0;
                 
-                const pixelHeightOffset = pixelHeightIndex * (rWidth) * channels;
-                const pixelPosition: number = blockIndex + ((j % blockWidth) * channels) + (pixelHeightOffset);
+                let pixelHeightIndex: number = -1;
 
-                blank[pixelPosition] = averageRed;
-                blank[pixelPosition + 1] = averageGreen;
-                blank[pixelPosition + 2] = averageBlue;
-            }
+                for (let j: number = 0; j < blockPixelCount; ++j) {
+                    if (j % blockWidth == 0) pixelHeightIndex++;
+                    
+                    const pixelHeightOffset = pixelHeightIndex * (rWidth) * channels;
+                    const pixelPosition: number = blockIndex + ((j % blockWidth) * channels) + (pixelHeightOffset);
 
-
-            //     tally++;
-            // }
-
-            // blank[blockIndex] = 255;
-            // blank[blockIndex + 1] = 255;
-            // blank[blockIndex + 2] = 255;
-            // const redAverage: number = redTotal / blockPixelCount;
-            // const blueAverage: number = blueTotal / blockPixelCount;
-            // const greenAverage: number = greenTotal / blockPixelCount;
-            
-            // for (let j: number = blockIndex; j < blockPixelCount; ++j) {
-            //     blank[j * channels] = redAverage;
-            //     blank[j * channels + 1] = blueAverage;
-            //     blank[j * channels + 2] = greenAverage;
-
-            //     if (channels == 4) blank[j * channels + 3] = 1;
-            // } 
-
-            // const r = data[i * channels];
-            // blank[i * channels] = r;
-        }
-        
-        sharp(blank, { raw: { width: rWidth, height: rHeight, channels: channels } })
-            .toFile("./img-cache/output.jpg", (err) => {
-                if (err) {
-                    console.error('Error saving image:', err);
-                    return;
+                    redTotal += data[pixelPosition];
+                    greenTotal += data[pixelPosition + 1];
+                    blueTotal += data[pixelPosition + 2];
+                    tally++;
                 }
-                console.log(`Image processed and saved successfully. Channels: ${channels}`);
-            });
+
+                const averageRed: number = redTotal / blockPixelCount;
+                const averageGreen: number = greenTotal / blockPixelCount;
+                const averageBlue: number = blueTotal / blockPixelCount;
+
+                pixelHeightIndex = -1;
+
+                for (let j: number = 0; j < blockPixelCount; ++j) {
+                    if (j % blockWidth == 0) pixelHeightIndex++;
+                    
+                    const pixelHeightOffset = pixelHeightIndex * (rWidth) * channels;
+                    const pixelPosition: number = blockIndex + ((j % blockWidth) * channels) + (pixelHeightOffset);
+
+                    blank[pixelPosition] = averageRed;
+                    blank[pixelPosition + 1] = averageGreen;
+                    blank[pixelPosition + 2] = averageBlue;
+
+                    blank[pixelPosition] = 240;
+                    blank[pixelPosition + 1] = 0;
+                    blank[pixelPosition + 2] = 0;
+
+                    if (channels === 4) blank[pixelPosition + 3] = 1;
+                }
+
+
+                //     tally++;
+                // }
+
+                // blank[blockIndex] = 255;
+                // blank[blockIndex + 1] = 255;
+                // blank[blockIndex + 2] = 255;
+                // const redAverage: number = redTotal / blockPixelCount;
+                // const blueAverage: number = blueTotal / blockPixelCount;
+                // const greenAverage: number = greenTotal / blockPixelCount;
+                
+                // for (let j: number = blockIndex; j < blockPixelCount; ++j) {
+                //     blank[j * channels] = redAverage;
+                //     blank[j * channels + 1] = blueAverage;
+                //     blank[j * channels + 2] = greenAverage;
+
+                //     if (channels == 4) blank[j * channels + 3] = 1;
+                // } 
+
+                // const r = data[i * channels];
+                // blank[i * channels] = r;
+            }
+            
+            sharp(blank, { raw: { width: rWidth, height: rHeight, channels: 3 } })
+                .toFile("./img-cache/output.jpg", (err) => {
+                    if (err) {
+                        console.error('Error saving image:', err);
+                        return;
+                    }
+                    console.log(`Image processed and saved successfully. Channels: ${channels}`);
+                });
     });
 
     return "hello world";
