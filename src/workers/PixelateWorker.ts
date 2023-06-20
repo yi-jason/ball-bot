@@ -3,24 +3,29 @@ import sharp from "sharp";
 
 let tally = 0;
 
-const pixelate = async (channelId: string, factor: number): Promise<string> => {
+const FACTOR_MAPPED_MAX: number = 100
+const FACTOR_MAPPED_MIN: number = 10
+
+const pixelate = async (channelId: string, raw_factor: number): Promise<string> => {
     const image = sharp(`./img-cache/${channelId}.png`);
     const metadata = await image.metadata();
     const { width, height, channels } = metadata;
 
+    const mapped_factor = Math.floor(
+        FACTOR_MAPPED_MAX - ((FACTOR_MAPPED_MAX - FACTOR_MAPPED_MIN) * (raw_factor / 100))
+    );
+
     if (!(width && height && channels)) return "hello world";
 
-    let rWidth: number = width - (width % factor);
-    let blockWidth: number = rWidth / factor;
+    let rWidth: number = width - (width % mapped_factor);
+    let blockWidth: number = rWidth / mapped_factor;
     let rHeight: number = height - (height % blockWidth);
 
     await image
         .raw()
         .resize({width: rWidth, height: rHeight})
-        .removeAlpha()
+        // .removeAlpha()
         .toBuffer((err, data, info) => {
-            let channels:number = 3;
-
             const blank: Buffer = Buffer.alloc(rWidth * rHeight * channels);
 
             let blockImageWidth: number = rWidth / blockWidth;
@@ -28,8 +33,8 @@ const pixelate = async (channelId: string, factor: number): Promise<string> => {
             let blockPixelCount: number = blockWidth * blockWidth;
             let blockHeightIndex: number = -1;
 
-            //for (let i: number = 0; i < blockImageWidth * blockImageHeight; ++i) {
-            for (let i: number = 0; i < 1; ++i) {
+            for (let i: number = 0; i < blockImageWidth * blockImageHeight; ++i) {
+            //for (let i: number = 0; i < 1; ++i) {
 
                 if (i % blockImageWidth == 0) blockHeightIndex++;
                 
@@ -54,7 +59,7 @@ const pixelate = async (channelId: string, factor: number): Promise<string> => {
                     redTotal += data[pixelPosition];
                     greenTotal += data[pixelPosition + 1];
                     blueTotal += data[pixelPosition + 2];
-                    tally++;
+                    // tally++;
                 }
 
                 const averageRed: number = redTotal / blockPixelCount;
@@ -73,37 +78,14 @@ const pixelate = async (channelId: string, factor: number): Promise<string> => {
                     blank[pixelPosition + 1] = averageGreen;
                     blank[pixelPosition + 2] = averageBlue;
 
-                    blank[pixelPosition] = 240;
-                    blank[pixelPosition + 1] = 0;
-                    blank[pixelPosition + 2] = 0;
-
-                    if (channels === 4) blank[pixelPosition + 3] = 1;
+                    if (channels === 4) {
+                        blank[pixelPosition + 3] = 255;
+                        // tally = 0;
+                    }
                 }
-
-
-                //     tally++;
-                // }
-
-                // blank[blockIndex] = 255;
-                // blank[blockIndex + 1] = 255;
-                // blank[blockIndex + 2] = 255;
-                // const redAverage: number = redTotal / blockPixelCount;
-                // const blueAverage: number = blueTotal / blockPixelCount;
-                // const greenAverage: number = greenTotal / blockPixelCount;
-                
-                // for (let j: number = blockIndex; j < blockPixelCount; ++j) {
-                //     blank[j * channels] = redAverage;
-                //     blank[j * channels + 1] = blueAverage;
-                //     blank[j * channels + 2] = greenAverage;
-
-                //     if (channels == 4) blank[j * channels + 3] = 1;
-                // } 
-
-                // const r = data[i * channels];
-                // blank[i * channels] = r;
             }
             
-            sharp(blank, { raw: { width: rWidth, height: rHeight, channels: 3 } })
+            sharp(blank, { raw: { width: rWidth, height: rHeight, channels: channels } })
                 .toFile("./img-cache/output.jpg", (err) => {
                     if (err) {
                         console.error('Error saving image:', err);

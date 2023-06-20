@@ -78,7 +78,7 @@ export const Pixelate: Command = {
                 iWorker.on("message", (data) => {
                     const attachment = new AttachmentBuilder("./img-cache/output.jpg");
                     interaction.followUp({
-                        content: data,
+                        //content: data,
                         files: [attachment],
                     });
                 });
