@@ -8,14 +8,17 @@ const IMAGE_SUFFIX: string = "\.(jpg|jpeg|png|tiff|tif|webp)";
 const GIF_REGEX: RegExp = new RegExp(GIF_PREFIX);
 const IMAGE_REGEX: RegExp = new RegExp(IMAGE_SUFFIX);
 
+const CODE_PREFIX: string = "```"
+
 export default (BOT: Client): void => {
     BOT.on(Events.MessageCreate, async (message: Message) => {
         const content: string = message.content;
         const channelId: string = message.channelId;
         const userId: string = message.author.id;
 
-        handleMessageGif(content, channelId);
+        handleMessageGif(message, channelId);
         handleMessageImage(message, channelId);
+        handleMessageCode(message, channelId);
         handleEthanDelete(message, userId);
 
         if (message.guild != null) {
@@ -32,7 +35,9 @@ export default (BOT: Client): void => {
     });
 }
 
-const handleMessageGif = (content: string, id: string): void => {
+const handleMessageGif = (message: Message, id: string): void => {
+    const content: string = message.content;
+
     if (!GIF_REGEX.test(content)) {
         return;
     }
@@ -71,6 +76,30 @@ const handleMessageImage = (message: Message, id: string): void => {
     })
 
     console.log("BOT: [IMAGE DETECTED]");
+}
+
+const handleMessageCode = (message: Message, id: string): void => {
+    const codeUnparsed: string = message.content.trim();
+
+    if (codeUnparsed.slice(0, 3) !== CODE_PREFIX 
+        || codeUnparsed.slice(codeUnparsed.length - 3) !== CODE_PREFIX) return;
+
+    const lang: string = codeUnparsed.split('\n')[0].slice(3);
+    const codeParsed: string = codeUnparsed.slice(lang.length + CODE_PREFIX.length, codeUnparsed.length - CODE_PREFIX.length);
+
+    if (lang === "py" || lang === "python")  {
+        const db: Database = getDatabase();
+        const reference: DatabaseReference = ref(db, "channel-code/" + id);
+        set(reference, {
+            source: codeParsed,
+            language: lang,
+        })
+
+
+        console.log("BOT: [PYTHON CODE DETECTED]");
+        console.log(codeParsed);
+    }
+
 }
 
 const handleEthanDelete = (message: Message, userId: string): void => {

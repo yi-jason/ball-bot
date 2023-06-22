@@ -11,8 +11,9 @@ import { Stat } from "./commands/NbaStat";
 import { GifList } from "./commands/GifList";
 import { EthanDelete } from "./commands/EthanDelete";
 import { Pixelate } from "./commands/Pixelate";
+import { Compile } from "./commands/Compile";
 
 /* Array of Command objects that stores all the Bot's commands */
 
 
-export const Commands: Command[] = [Ask, Flip, Gif, GifList, GifSave, Image, ImageSave, Snipe, Nba, Stat, EthanDelete, Pixelate];
+export const Commands: Command[] = [Ask, Flip, Gif, GifList, GifSave, Image, ImageSave, Snipe, Nba, Stat, EthanDelete, Pixelate, Compile];
