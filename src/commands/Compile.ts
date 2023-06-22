@@ -1,7 +1,8 @@
-import { Client, CommandInteraction, ApplicationCommandType, AttachmentBuilder, EmbedBuilder, ApplicationCommandOptionType, ApplicationCommandOptionData } from "discord.js";
-import fs from "fs";
+import { Client, CommandInteraction, ApplicationCommandType, AttachmentBuilder, EmbedBuilder, ApplicationCommandOptionType, ApplicationCommandOptionData, OAuth2Guild } from "discord.js";
 import { Command } from "../Command";
 import { Database, DatabaseReference, getDatabase, onValue, ref } from "firebase/database";
+import { spawn } from "child_process";
+import fs, { unlink } from "fs";
 
 /*
     export interface ChatInputApplicationCommandData extends BaseApplicationCommandData {
@@ -15,6 +16,8 @@ import { Database, DatabaseReference, getDatabase, onValue, ref } from "firebase
 const PYTHON_EXT: string = ".py";
 const C_EXT: string = ".c";
 const CPP_EXT: string = ".cpp";
+
+const PYTHON_ID: number = 0;
 
 export const Compile: Command = {
     name: "compile",
@@ -31,7 +34,13 @@ export const Compile: Command = {
                 const lang: string = snapshot.val().language;
 
                 if (!code || !lang) return;
-                executeSourceCode(code, lang, channelId);
+                const out: string | undefined = await executeSourceCode(code, lang, channelId);
+
+                if (out != undefined) {
+                    interaction.followUp({
+                        content: "```".concat(lang).concat('\n').concat(out).concat("\n```"),
+                    });
+                }
             }
             return;
           }, {
@@ -40,24 +49,38 @@ export const Compile: Command = {
     }
 }
 
-const executeSourceCode = (text: string, language: string, id: string): string | undefined => {
-    const filePathBase = "./user-src-cache/";
+const executeSourceCode = (text: string, language: string, id: string): Promise<string | undefined> => {
+    return new Promise((res, rej) => {
+        const filePathBase: string = "./user-src-cache/";
 
-    if (!fs.existsSync(filePathBase)) {
-        fs.mkdirSync(filePathBase);
-    }
+        if (!fs.existsSync(filePathBase)) {
+            fs.mkdirSync(filePathBase);
+        }
 
-    let filePath: string | undefined = undefined;
-    if (language === "py" || language === "python") {
-        filePath = filePathBase.concat(id).concat(PYTHON_EXT);
-    }
+        let filePath: string | undefined = undefined;
+        let executionRoutineIdentifier: number = -1;
+        if (language === "py" || language === "python") {
+            filePath = filePathBase.concat(id).concat(PYTHON_EXT);
+            executionRoutineIdentifier = PYTHON_ID;
+        }
 
-    if (!filePath) return undefined;
-    fs.writeFile(filePath, text, err => {
-        if (err) console.error("BOT: User write to user-src-cache failed");
-    });
+        if (!filePath) return undefined;
+        fs.writeFile(filePath, text, err => {
+            if (err) console.error("BOT: User write to user-src-cache failed");
+        });
 
-    
+        let childStandardOutput: string | undefined = undefined;
 
-    return "hello";
+        switch(executionRoutineIdentifier) {
+            case PYTHON_ID:
+                const child = spawn("python3", [filePath]);
+
+                child.stdout.on("data", (data: Buffer) => {
+                    data.toString('utf-8');
+                    res(data.toString('utf-8'));
+                })
+
+            break;
+        }
+    })
 }
