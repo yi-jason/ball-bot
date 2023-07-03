@@ -3,7 +3,7 @@
 <br/> Ball Bot is a multi-functional Discord bot, capable of pulling NBA game data and statistics and storing .gif files among other functions which are described below.
 
 
-## Functions
+## Commands
 
 
 ### Questions and Answers
