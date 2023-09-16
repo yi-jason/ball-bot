@@ -1,6 +1,7 @@
 import color from "ansi-colors";
 import { Client, Message, Events, Snowflake, Attachment, Collection, TextChannel, GuildBasedChannel } from "discord.js";
 import { Database, DatabaseReference, getDatabase, onValue, ref, set } from "firebase/database";
+import { Gif } from "../commands/Gif";
 
 const GIF_PREFIX: string = "https:\/\/tenor.com\/view";
 const IMAGE_SUFFIX: string = "\.(jpg|jpeg|png|tiff|tif|webp)";
@@ -20,6 +21,7 @@ export default (BOT: Client): void => {
         handleMessageImage(message, channelId);
         handleMessageCode(message, channelId);
         handleEthanDelete(message, userId);
+        handleLegacyGifCommand(BOT, message, channelId);
 
         if (message.guild != null) {
             const c: GuildBasedChannel | undefined | string = message.guild.channels.cache.find(channel => channel.id === channelId);
@@ -95,11 +97,9 @@ const handleMessageCode = (message: Message, id: string): void => {
             language: lang,
         })
 
-
         console.log("BOT: [PYTHON CODE DETECTED]");
         console.log(codeParsed);
     }
-
 }
 
 const handleEthanDelete = (message: Message, userId: string): void => {
@@ -109,6 +109,31 @@ const handleEthanDelete = (message: Message, userId: string): void => {
         onValue(reference, async (snapshot) => {
             if (snapshot.exists() && snapshot.val()) {
                 setTimeout(() => message.delete(), 1000)
+            }
+          }, {
+            onlyOnce: true
+        });
+    }
+}
+
+const handleLegacyGifCommand = (BOT: Client, message: Message, id: string): void => {
+    const messageCommand: string = message.content.split(" ")[0];
+
+    if (messageCommand.toLowerCase() == ".g") {
+        const nameStart: number = 3;
+        const nameEnd: number = message.content.length;
+
+        const gif = message.content.substring(nameStart, nameEnd);
+
+        const db: Database = getDatabase();
+        const reference: DatabaseReference = ref(db, 'gif-list/' + gif);
+
+        onValue(reference, async (snapshot) => {
+            if (snapshot.exists()) {
+                const url = snapshot.val().url;
+                await message.channel.send(url);
+            } else {
+                await message.channel.send(`**GIF "${gif}" does not exist!**`);
             }
           }, {
             onlyOnce: true
