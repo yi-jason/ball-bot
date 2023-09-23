@@ -8,7 +8,7 @@ export const NBAColors: {[key: string]: string} = {
   DAL: 'blue',
   DEN: 'yellow',
   DET: 'blue',
-  GSW: 'orange',
+  GSW: 'yellow',
   HOU: 'red',
   IND: 'yellow',
   LAC: 'white',
