@@ -117,16 +117,15 @@ const handleEthanDelete = (message: Message, userId: string): void => {
 }
 
 const handleLegacyGifCommand = (BOT: Client, message: Message, id: string): void => {
-    const messageCommand: string = message.content.split(" ")[0];
+    const messageCommand: string = message.content.split(" ")[0].toLowerCase();
 
-    if (messageCommand.toLowerCase() == ".g") {
-        const nameStart: number = 3;
-        const nameEnd: number = message.content.length;
-
+    const fetchRespondLegacyGif = (prefix: string, fbSection: string): void => {
+        const nameStart: number = prefix.length + 1;
+        const nameEnd = message.content.length;
         const gif = message.content.substring(nameStart, nameEnd);
 
         const db: Database = getDatabase();
-        const reference: DatabaseReference = ref(db, 'gif-list/' + gif);
+        const reference: DatabaseReference = ref(db, fbSection + gif);
 
         onValue(reference, async (snapshot) => {
             if (snapshot.exists()) {
@@ -138,5 +137,14 @@ const handleLegacyGifCommand = (BOT: Client, message: Message, id: string): void
           }, {
             onlyOnce: true
         });
+    }
+
+    const genericGifPrefix: string = ".g";
+    const rggGifPrefix: string = ".rgg";
+
+    if (messageCommand == genericGifPrefix) {
+        fetchRespondLegacyGif(genericGifPrefix, "gif-list/");
+    } else if (messageCommand == rggGifPrefix) {
+        fetchRespondLegacyGif(rggGifPrefix, "rgg-gif-list/");
     }
 }
