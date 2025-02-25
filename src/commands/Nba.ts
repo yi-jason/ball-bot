@@ -33,6 +33,21 @@ const ballThumbnail: string = "https://cdn.discordapp.com/avatars/98383984937311
 
 const scoreboardEndPointURL: string = "scoreboard/todaysScoreboard_00.json";
 
+const buildGame = (game: any): Game => ({
+    homeTeam: game.homeTeam.teamTricode,
+    awayTeam: game.awayTeam.teamTricode,
+    homeScore: game.homeTeam.score,
+    awayScore: game.awayTeam.score,
+    gameStatus: game.gameStatusText,
+    gameTime: new Date(game.gameEt.slice(0, -1)).toLocaleTimeString(),
+    gameClock: game.gameClock,
+    period: game.period,
+    homeLeaderName: game.gameLeaders.homeLeaders.name,
+    homeLeaderPoints: game.gameLeaders.homeLeaders.points,
+    awayLeaderName: game.gameLeaders.awayLeaders.name,
+    awayLeaderPoints: game.gameLeaders.awayLeaders.points,
+});
+
 export const Nba: Command = {
     name: "nba",
     description: "Sends real-time NBA game data",
@@ -58,42 +73,23 @@ export const Nba: Command = {
             .setPlaceholder('Select a team!')
         
         for (const game of games) {
-            const homeTeam: string = game.homeTeam.teamTricode;
-            const awayTeam: string = game.awayTeam.teamTricode;
-            const gameStatus: string = game.gameStatusText;
-            const gameTime: string = new Date(game.gameEt.slice(0, -1)).toLocaleTimeString();
-
-            const g: Game = {
-                homeTeam: homeTeam,
-                awayTeam: awayTeam,
-                homeScore: game.homeTeam.score,
-                awayScore: game.awayTeam.score,
-                gameStatus: gameStatus,
-                gameTime: gameTime,
-                gameClock: game.gameClock,
-                period: game.period,
-                homeLeaderName: game.gameLeaders.homeLeaders.name,
-                homeLeaderPoints: game.gameLeaders.homeLeaders.points,
-                awayLeaderName: game.gameLeaders.awayLeaders.name,
-                awayLeaderPoints: game.gameLeaders.awayLeaders.points,
-            }
-
+            const g = buildGame(game);
             gameList.push(g);
 
-            const homeColor: string = `:${NBAColors[homeTeam]}_square:`;
-            const awayColor: string = `:${NBAColors[awayTeam]}_square:`;
+            const homeColor: string = `:${NBAColors[g.homeTeam]}_square:`;
+            const awayColor: string = `:${NBAColors[g.awayTeam]}_square:`;
 
             gamesEmbed.addFields(
                 {
-                    name: `${homeColor} ${homeTeam} vs. ${awayTeam} ${awayColor}`, 
-                    value: `**Status:** ${gameStatus}\n**Time:** ${gameTime}`,
+                    name: `${homeColor} ${g.homeTeam} vs. ${g.awayTeam} ${awayColor}`, 
+                    value: `**Status:** ${g.gameStatus}\n**Time:** ${g.gameTime}`,
                     inline: true,
                 }
             )
 
             teamSelection.addOptions(
                 new StringSelectMenuOptionBuilder()
-                    .setLabel(`${homeTeam} | ${awayTeam}`)
+                    .setLabel(`${g.homeTeam} | ${g.awayTeam}`)
                     .setValue(`${gameIndex++}`)
             );
         }
