@@ -86,7 +86,8 @@ export const Nba: Command = {
             gamesEmbed.addFields(
                 {
                     name: `${homeColor} ${homeTeam} vs. ${awayTeam} ${awayColor}`, 
-                    value: `Time: ${gameStatus}`
+                    value: `**Status:** ${gameStatus}\n**Time:** ${gameTime}`,
+                    inline: true,
                 }
             )
 
@@ -118,22 +119,25 @@ export const Nba: Command = {
             const gEmbed = new EmbedBuilder()
                 .setColor('#ffa500')
                 .setTitle(`${homeColor} ${g.homeTeam} vs. ${g.awayTeam} ${awayColor}`)
-                .setDescription(`${g.homeScore} - ${g.awayScore}\n\n${gameState}`)
+                .setDescription(`**Score:** ${g.homeScore} - ${g.awayScore}\n**State:** ${gameState}`)
                 .addFields(
                     {
-                        name: "Home Leader",
+                        name: "🏠 Home Leader",
                         value: `${g.homeLeaderName} - ${g.homeLeaderPoints} pts`,
+                        inline: true,
                     },
 
                     {
-                        name: "Away Leader",
+                        name: "🚶 Away Leader",
                         value: `${g.awayLeaderName} - ${g.awayLeaderPoints} pts`,
+                        inline: true,
                     }
-                );
+                )
+                .setFooter({ text: "NBA Game Data", iconURL: ballThumbnail });
 
             await response.edit({embeds: [gEmbed]});
             await i.reply({
-                content: "updated",
+                content: "Updated",
                 ephemeral: true,
             });
              

@@ -14,7 +14,6 @@ import { EmbedBuilder } from "@discordjs/builders";
 */
 
 
-
 const teamOptionDefault: string = "team";
 const playerOptionDefault: string = "player";
 
@@ -108,14 +107,6 @@ export const Stat: Command = {
 
             return; /* end here if team stats only */
         }
-
-
-
-        /* Player Stats */
-
-
-        
-        /* Check if team is playing */
 
 
         /* Check for player existence */
