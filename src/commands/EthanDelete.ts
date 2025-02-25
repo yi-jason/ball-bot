@@ -38,12 +38,12 @@ export const EthanDelete: Command = {
     
             await interaction.followUp({
                 ephemeral: false,
-                content: "**Ethan Delete Toggled!**"
+                content: "`Ethan Delete Toggled!`"
             });
         } else {
             await interaction.followUp({
                 ephemeral: false,
-                content: "**You do not have the permission to use this command!**"
+                content: "`You do not have the permission to use this command!`"
             });
         }
 

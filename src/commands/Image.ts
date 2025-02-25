@@ -41,7 +41,7 @@ export const Image: Command = {
                 });
             } else {
                 await interaction.followUp({
-                    content: `**Image "${img}" does not exist!**`
+                    content: `Image "${img}" does not exist!`
                 });
             }
           }, {

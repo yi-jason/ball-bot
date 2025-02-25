@@ -13,6 +13,6 @@ export default (BOT: Client): void => {
 
         await BOT.application.commands.set(Commands);
 
-        console.log(`${BOT.user.username} is balling`);
+        console.log(`BOT: [${BOT.user.username}] IS READY`);
     });
 }
